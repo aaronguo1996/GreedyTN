@@ -9,4 +9,4 @@ tensorly
 torch
 torchvision
 tqdm==4.66.1
-typing-extensions==3.7.4.3
+typing-extensions>=4.5
