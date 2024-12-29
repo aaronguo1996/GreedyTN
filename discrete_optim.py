@@ -38,7 +38,7 @@ def find_best_edge(train_loader, val_loader, test_loader, model, criterion, opt)
 def greedy(train_loader, val_loader, test_loader, model, criterion, opt):
     hist = []
 
-    for step in tqdm(range(opt.steps)):
+    for step in range(opt.steps):
         if not step:
             optimizer = torch.optim.Adam(model.parameters(),
                                          lr=opt.learning_rate,

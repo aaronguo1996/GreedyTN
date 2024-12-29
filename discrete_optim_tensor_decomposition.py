@@ -17,7 +17,7 @@ def squared_error_loss(A, B, weights=None):
 
 
 def RMSE(target, recov):
-    return torch.norm(target.squeeze() - recov.squeeze()) / torch.norm(target) * 100
+    return torch.norm(target.squeeze() - recov.squeeze()) / torch.norm(target)
 
 
 def weighted_lstsq(A, B, W):
@@ -184,13 +184,14 @@ def greedy_decomposition_ALS(target, opt, verbose=1, weights=None, max_arity=-1,
 
     target_unfold_list = None
 
-    for step in tqdm(range(it, it+opt.steps)):
+    for step in range(it, it+opt.steps):
         if not step:
             if opt.restart_from_pickle is None:
-                model = cc.random_tn(target.shape, rank=[[512, 512,   1,   1],
-                                                            [512, 512,   1,   1],
-                                                            [  1,   1,   3,   1],
-                                                            [  1,   1,   1,   3]])
+                # model = cc.random_tn(target.shape, rank=[[512, 512,   1,   1],
+                #                                             [512, 512,   1,   1],
+                #                                             [  1,   1,   3,   1],
+                #                                             [  1,   1,   1,   3]])
+                model = cc.random_tn(target.shape, rank=1)
             model = ALS(target, model, range(num_cores), max_iter=opt.epochs, cvg_threshold=opt.cvg_threshold, weights=weights, target_unfold_list=target_unfold_list)
             loss = squared_error_loss(target, cc.get_full_tensor(model), weights)
             if verbose > 0:
@@ -257,7 +258,6 @@ def greedy_decomposition_ALS(target, opt, verbose=1, weights=None, max_arity=-1,
 
             results.append(
                 {'iter': step,
-                 'model': model,
                  'num_params': cc.get_num_params(model),
                  'loss': loss,
                  'weights': weights})
@@ -267,9 +267,9 @@ def greedy_decomposition_ALS(target, opt, verbose=1, weights=None, max_arity=-1,
                     pickle.dump([results, opt], f)
 
         if loss <= opt.stopping_threshold:
-            return results
+            return results, model
 
-    return results
+    return results, model
 
 
 def random_walk_decomposition(target, opt, verbose=1, weights=None, max_arity=-1, internal_nodes=True):
@@ -296,7 +296,7 @@ def random_walk_decomposition(target, opt, verbose=1, weights=None, max_arity=-1
 
     target_unfold_list = None
 
-    for step in tqdm(range(it, it+opt.steps)):
+    for step in range(it, it+opt.steps):
         if not step:
             if opt.restart_from_pickle is None:
                 model = cc.random_tn(target.shape, rank=1)

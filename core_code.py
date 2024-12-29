@@ -51,8 +51,8 @@ def random_tn(input_dims=None, rank=1):
 
     # Check that diagonals match input_dims
     if input_dims is not None:
-        assert len(input_dims) == num_cores
-        assert all(shape_list[i][i] == d for i, d in enumerate(input_dims))
+        assert len(input_dims) == num_cores, f"input_dims: {input_dims}, num_cores: {num_cores}"
+        assert all(shape_list[i][i] == d for i, d in enumerate(input_dims)), f"shape_list: {shape_list}, input_dims: {input_dims}"
 
     # Use shapes to instantiate random core tensors
     # The variance of the normal distributions is chosen to make the tensor norm 1 in expectation.
